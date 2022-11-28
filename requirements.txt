@@ -23,6 +23,6 @@ flask-peewee
 alembic
 #https://gitee.com/labike/awesome-flask
 Flask-Restless
-Flask-User
-Flask-SuperAdmin
+# Flask-User
+# Flask-SuperAdmin
 Flask-Alembic
