@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>events static html</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.13/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+<section id="app" class="section">
+    <div class="container">
+        <h1 class="title">
+            {{ message }}
+        </h1>
+        <div v-for="e in events">
+        <h2><strong>{{ e[1] }}</strong></h2>
+        </div>
+
+    </div>
+</section>
+<script>
+    let app = new Vue({
+        el: '#app',
+        created: function (){
+          this.getEvents()
+        },
+        data: {
+            message: 'hello, events',
+            events: []
+        },
+        methods: {
+            getEvents: function (){
+                fetch("/api/events").then((response) => {
+                    return response.json();
+                }).then((data) => {
+                    this.events = data
+                    console.log(data)
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>

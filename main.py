@@ -6,7 +6,8 @@ load_dotenv()  # take environment variables from .env.
 from flaskext.mysql import MySQL
 mysql = MySQL()
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
+
 app.config['MYSQL_DATABASE_HOST'] = os.getenv('MYSQL_DATABASE_HOST')
 app.config['MYSQL_DATABASE_DB'] = os.getenv('MYSQL_DATABASE_DB')
 app.config['MYSQL_DATABASE_USER'] = os.getenv('MYSQL_DATABASE_USER')
@@ -23,9 +24,13 @@ data = cursor.fetchall()
 print(data)
 cursor.close()
 
-
 @app.route('/')
 def index():
+    return app.send_static_file('index.html')
+
+
+@app.route('/api/events')
+def events():
     return jsonify(data)
     # return jsonify({"Choo Choo": "Welcome to dance-digest Flask"})
 
