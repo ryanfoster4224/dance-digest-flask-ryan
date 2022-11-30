@@ -8,71 +8,85 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 </head>
 <body>
-<section id="app" class="section">
-    <div class="container">
-        <details id="account">
-            <summary>sign in</summary>
-            userid:{{ userId }} <input type="text" placeholder="username" v-model="username">
-            <input type="text" v-model="password" placeholder="password">
-            <button v-on:click="getPermissions">sign in</button>
-        </details>
-        <div id="addEvent">
-            <input type="text" minlength="8" v-model="title" placeholder="назва танцювальної вечірки">
-            <select v-model="location" required>
-                <option value="-1" selected disabled>місце проведення</option>
-                <option value="value2">Кампус</option>
-                <option value="value3">Скайлофт</option>
-                <option value="value4">Буена</option>
-            </select>
-            <br><textarea style="width: 80%" placeholder="детальний опис події"></textarea>
-            <div v-if="authorMode">
-
-            </div>
-            <div v-if="rootMode">
-                <input type="text" minlength="2" v-model="price" placeholder="вартість: мінімальна-максимальна ціна">
-                <input type="text" v-model="brief" placeholder="стислий опис">
-                author: <select v-model="authorId">
-                <option>cherk</option>
-            </select>
-            </div>
-            <button>додати вечірку</button>
-        </div>
-
-        <div v-for="e, index in events">
-            <h2 v-if="!e.editMode">{{ e.id }} <strong>{{ e.title }}</strong> price: {{ e.price }}</h2>
-            <h2 v-else>
-                <input type="text" v-model="e.title">
-                <br><textarea style="width: 80%" v-model="e.description"></textarea>
-                <button v-on:click="saveEvent(index)">Зберегти зміни</button>
-            </h2>
-            <div v-if="authorId===e.authorId || superAdmin">
-                <button v-on:click="editEvent(index)" class="button is-primary">edit</button>
-                <button class="button ">clone</button>
-                <button v-on:click="remove(index)" class="button">delete</button>
-            </div>
-            <hr>
-        </div>
-
+<div id="app">
+    <div id="account">
+        <summary>залогінитись в систему</summary>
+        користувач:{{ authorId }} <input type="text" placeholder="username" v-model="username">
+        <input type="password" v-model="password" placeholder="password">
+        <button v-on:click="getPermissions">зайти</button>
     </div>
-</section>
+
+    <section class="section">
+        <div class="container">
+            <div id="addEvent">
+                <input type="text" minlength="8" v-model="title" placeholder="назва танцювальної вечірки">
+                <input v-model="start" type="text" maxlength="5" placeholder="час початку вечірки">
+                <select v-model="weekday" required>
+                    <option value="-1" selected disabled>день тижня</option>
+                    <option v-for="item, index  in weekdays" :value="index">{{ item }}</option>
+                </select>
+                <select v-model="location" required>
+                    <option value="-1" selected disabled>місце проведення</option>
+                    <option v-for="item  in locations" :value="item">{{ item }}</option>
+                </select>
+                <select v-model="balance" required>
+                    <option value="не визначено" selected disabled>баланс музики</option>
+                    <option v-for="item  in balances" :value="item">{{ item }}</option>
+                </select>
+
+                <br><textarea v-model="full" style="width: 80%" placeholder="детальний опис події"></textarea>
+
+                <div v-if="authorMode">
+
+                </div>
+                <div v-if="superAdmin">
+                    <input type="text" minlength="2" v-model="price"
+                           placeholder="вартість: мінімальна-максимальна ціна">
+                    <input type="text" v-model="brief" placeholder="стислий опис">
+                    author: <select v-model="authorId">
+                    <option>cherk</option>
+                </select>
+                </div>
+                <button v-on:click="insertEvent">додати вечірку</button>
+            </div>
+
+            <div v-for="e, index in events">
+                <h2 v-if="!e.editMode"><strong>{{ e.title }}</strong> ціна: {{ e.price }}</h2>
+                <h2 v-else>
+                    <input type="text" v-model="e.title">
+
+                    <br><textarea style="width: 80%" v-model="e.full"></textarea>
+                    <button v-on:click="saveEvent(index)">Зберегти зміни</button>
+                </h2>
+                <div v-if="authorMode && ( authorId===e.authorId || superAdmin)">
+                    <button v-on:click="editEvent(index)" class="button is-primary">edit</button>
+                    <button v-on:click="remove(e.id)" class="button">delete</button>
+                </div>
+                <hr>
+            </div>
+
+        </div>
+    </section>
+</div>
 <script>
     let app = new Vue({
         el: '#app',
         created: function () {
-            this.getEvents()
+            //this.getEvents()
         },
         data: {
             message: 'hello, events',
-            userId: -1,
+            authorId: -1,
             username: 'cherk', password: 'C8C4573806',
             currentEventId: -1,
-            title: "", description: "", location: -1,
-            authorId: -1,
-            authorMode: false,
-            superAdmin: false,
-            rootMode: false,
+            title: "", full: "", location: -1, weekday: -1, start: null, balance: "не визначено",
+            superAdmin: false, authorMode: false,
+
             brief: "", price: null,
-            events: []
+            events: [],
+            weekdays: ["понеділок", "вівторок", "середа", "четвер", "пʼятниця", "субота", "неділя"],
+            balances: ["3 бачати, 1 сальса", "1 сальса, 1 бачата", "зук", "кізомба","не визначено"],
+            locations: ["кампус", "буена", "арт-кафе золоті ворота"]
         },
         methods: {
             getEvents: function () {
@@ -90,8 +104,6 @@
             getPermissions: function () {
                 const requestOptions = {
                     method: "GET",
-                    //headers: {"Content-Type": "application/json"},
-                    //body: JSON.stringify({username: this.username, password: this.password})
                 };
                 fetch(`/api/user/?username=${this.username}&password=${this.password}`).then((response) => {
                     return response.json();
@@ -102,6 +114,28 @@
                     this.superAdmin = data.superAdmin
                 })
             },
+
+            insertEvent: function () {
+                const body = {
+                    title: this.title,
+                    location: this.location,
+                    weekday: this.weekday,
+                    full: this.full,
+                    authorId: this.authorId,
+                    published: this.authorId > 0
+                }
+                //if (this.authorId>0){body.published=1}
+                console.log(body)
+                const requestOptions = {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify(body)
+                }
+                fetch("/api/event/", requestOptions).then(() => {
+                    //this.getEvents()
+                })
+            },
+
             editEvent: function (index) {
                 //alert("let's edit " + index)
                 this.events[index].editMode = true
@@ -111,19 +145,11 @@
                 this.events[index].editMode = false
             },
 
-            addEvent: function (event) {
-                console.log('adding ' + event)
-                const requestOptions = {
-                    method: "DELETE",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({val: 42})
-                };
-                fetch("/api/event/" + id, requestOptions).then(() => {
-                    //this.getEvents()
-                })
-            },
             remove: function (id) {
                 console.log('deleting ' + id)
+                if (!confirm('Ви впевнені, що хочете видалити вечірку?')) {
+                    return // Do nothing!
+                }
 
                 const requestOptions = {
                     method: "DELETE",

@@ -18,6 +18,11 @@ app.config['MYSQL_DATABASE_PORT'] = int(os.getenv('MYSQL_DATABASE_PORT'))
 mysql.init_app(app)
 conn = mysql.connect()
 
+class GetObjFromDict:
+    def __init__(self, d=None):
+        if d is not None:
+            for key, value in d.items():
+                setattr(self, key, value)
 
 @app.route('/')
 def index():
@@ -27,8 +32,10 @@ def index():
 @app.route('/api/events')
 def events_list():
     cursor = conn.cursor(DictCursor)
-
-    rez = cursor.execute('SELECT * FROM parties')
+    try:
+        rez = cursor.execute('SELECT * FROM parties')
+    except:
+        print('error while select')
     data = cursor.fetchall()
     print(data)
     cursor.close()
@@ -37,15 +44,36 @@ def events_list():
 
 
 @app.route('/api/event/', methods=['POST'])
-def event_add():
-    print('adding ')
-    return jsonify('maybe')
+def event_insert():
+    data = GetObjFromDict(request.json)
+    print(data)
+    cursor = conn.cursor(DictCursor)
+
+    query =f'INSERT INTO parties (title, location, weekday, full, authorId, published ) VALUES ("{data.title}","{data.location}","{data.weekday}","{data.full}",{data.authorId},{data.published})'
+    try:
+        rez =  cursor.execute(query)
+    except:
+        print('error with '+query)
+    finally:
+        conn.commit()
+        cursor.close()
+        return jsonify({})
 
 
 @app.route('/api/event/<int:id>', methods=['DELETE'])
 def event_delete(id: int):
     print('deleting ' + str(id))
-    return jsonify('maybe')
+    cursor = conn.cursor(DictCursor)
+
+    query = f'DELETE FROM parties WHERE id={id}'
+    try:
+        rez =  cursor.execute(query)
+    except:
+        print('deleting error '+ query)
+    finally:
+        conn.commit()
+        cursor.close()
+        return jsonify('maybe')
 
 
 @app.route('/api/user/')
@@ -76,7 +104,8 @@ def get_permissions():
 
 @app.route('/api/user', methods=['POST'])
 def user_create():
-    pass
+    print(request.json)
+    return jsonify({})
 
 
 if __name__ == '__main__':
