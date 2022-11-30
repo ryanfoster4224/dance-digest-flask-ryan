@@ -3,19 +3,54 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>events static html</title>
+    <title>пункти танцювальності</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.13/dist/vue.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 </head>
 <body>
 <section id="app" class="section">
     <div class="container">
-        <div id="account"><button>login</button></div>
-        <h1 class="title">
-            {{ message }}
-        </h1>
-        <div v-for="e in events">
-        <h2><strong>{{ e[1] }}</strong></h2>
+        <details id="account">
+            <summary>sign in</summary>
+            userid:{{ userId }} <input type="text" placeholder="username" v-model="username">
+            <input type="text" v-model="password" placeholder="password">
+            <button v-on:click="getPermissions">sign in</button>
+        </details>
+        <div id="addEvent">
+            <input type="text" minlength="8" v-model="title" placeholder="назва танцювальної вечірки">
+            <select v-model="location" required>
+                <option value="-1" selected disabled>місце проведення</option>
+                <option value="value2">Кампус</option>
+                <option value="value3">Скайлофт</option>
+                <option value="value4">Буена</option>
+            </select>
+            <br><textarea style="width: 80%" placeholder="детальний опис події"></textarea>
+            <div v-if="authorMode">
+
+            </div>
+            <div v-if="rootMode">
+                <input type="text" minlength="2" v-model="price" placeholder="вартість: мінімальна-максимальна ціна">
+                <input type="text" v-model="brief" placeholder="стислий опис">
+                author: <select v-model="authorId">
+                <option>cherk</option>
+            </select>
+            </div>
+            <button>додати вечірку</button>
+        </div>
+
+        <div v-for="e, index in events">
+            <h2 v-if="!e.editMode">{{ e.id }} <strong>{{ e.title }}</strong> price: {{ e.price }}</h2>
+            <h2 v-else>
+                <input type="text" v-model="e.title">
+                <br><textarea style="width: 80%" v-model="e.description"></textarea>
+                <button v-on:click="saveEvent(index)">Зберегти зміни</button>
+            </h2>
+            <div v-if="authorId===e.authorId || superAdmin">
+                <button v-on:click="editEvent(index)" class="button is-primary">edit</button>
+                <button class="button ">clone</button>
+                <button v-on:click="remove(index)" class="button">delete</button>
+            </div>
+            <hr>
         </div>
 
     </div>
@@ -23,22 +58,81 @@
 <script>
     let app = new Vue({
         el: '#app',
-        created: function (){
-          this.getEvents()
+        created: function () {
+            this.getEvents()
         },
         data: {
             message: 'hello, events',
+            userId: -1,
+            username: 'cherk', password: 'C8C4573806',
+            currentEventId: -1,
+            title: "", description: "", location: -1,
+            authorId: -1,
+            authorMode: false,
+            superAdmin: false,
+            rootMode: false,
+            brief: "", price: null,
             events: []
         },
         methods: {
-            getEvents: function (){
+            getEvents: function () {
                 fetch("/api/events").then((response) => {
                     return response.json();
                 }).then((data) => {
+                    for (let event of data) {
+                        event.editMode = false
+                    }
                     this.events = data
                     console.log(data)
                 })
-            }
+            },
+
+            getPermissions: function () {
+                const requestOptions = {
+                    method: "GET",
+                    //headers: {"Content-Type": "application/json"},
+                    //body: JSON.stringify({username: this.username, password: this.password})
+                };
+                fetch(`/api/user/?username=${this.username}&password=${this.password}`).then((response) => {
+                    return response.json();
+                }).then((data) => {
+                    console.log(data)
+                    this.authorId = data.authorId
+                    this.authorMode = data.authorId > 0 || data.superAdmin
+                    this.superAdmin = data.superAdmin
+                })
+            },
+            editEvent: function (index) {
+                //alert("let's edit " + index)
+                this.events[index].editMode = true
+                console.log(this.events)
+            },
+            saveEvent: function (index) {
+                this.events[index].editMode = false
+            },
+
+            addEvent: function (event) {
+                console.log('adding ' + event)
+                const requestOptions = {
+                    method: "DELETE",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({val: 42})
+                };
+                fetch("/api/event/" + id, requestOptions).then(() => {
+                    //this.getEvents()
+                })
+            },
+            remove: function (id) {
+                console.log('deleting ' + id)
+
+                const requestOptions = {
+                    method: "DELETE",
+                    headers: {"Content-Type": "application/json"},
+                };
+                fetch("/api/event/" + id, requestOptions).then(() => {
+                    this.getEvents()
+                })
+            },
         }
     })
 </script>
