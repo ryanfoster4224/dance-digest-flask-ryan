@@ -1,0 +1,27 @@
+### GET request with a header
+GET http://127.0.0.1:5000/add
+Accept: application/json
+
+
+### GET request with a header
+GET http://127.0.0.1:5000/api/events
+Accept: application/json
+
+
+### Send POST request with json body
+POST http://127.0.0.1:5000/api/event
+Content-Type: application/json
+
+{
+  "title": "bachata festival",
+  "price": "1400"
+}
+
+### Send POST request with json body
+POST http://127.0.0.1:5000/api/user
+Content-Type: application/json
+
+{
+  "username": "root",
+  "password": "4yFG5byD88"
+}

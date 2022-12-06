@@ -9,7 +9,7 @@
 </head>
 <body>
 <div id="app">
-    <div id="account">
+    <div id="account" v-if="authorId<0">
         <summary>залогінитись в систему</summary>
         користувач:{{ authorId }} <input type="text" placeholder="username" v-model="username">
         <input type="password" v-model="password" placeholder="password">
@@ -51,7 +51,12 @@
             </div>
 
             <div v-for="e, index in events">
-                <h2 v-if="!e.editMode"><strong>{{ e.title }}</strong> ціна: {{ e.price }}</h2>
+                <div v-if="!e.editMode"><strong>{{ e.title }}</strong> {{ e.weekday }} початок: {{ e.start }}
+                     адреса: {{ e.location }}
+                    ціна: {{ e.price }}
+                    <pre>{{ e.full }}</pre>
+
+                </div>
                 <h2 v-else>
                     <input type="text" v-model="e.title">
 
@@ -79,7 +84,7 @@
             authorId: -1,
             username: 'cherk', password: 'C8C4573806',
             currentEventId: -1,
-            title: "", full: "", location: -1, weekday: -1, start: null, balance: "не визначено",
+            title: "", full: "", location: -1, weekdayIndex: -1, weekday:-1, start: null, balance: "не визначено",
             superAdmin: false, authorMode: false,
 
             brief: "", price: null,
@@ -118,6 +123,8 @@
             insertEvent: function () {
                 const body = {
                     title: this.title,
+                    weekdayIndex: this.weekdayIndex,
+                    weekday: this.weekdays[this.weekdayIndex],
                     location: this.location,
                     weekday: this.weekday,
                     full: this.full,
@@ -132,7 +139,7 @@
                     body: JSON.stringify(body)
                 }
                 fetch("/api/event/", requestOptions).then(() => {
-                    //this.getEvents()
+                    this.getEvents()
                 })
             },
 

@@ -1,28 +1,34 @@
-click==7.1.2
-Flask==1.1.2
-gunicorn==20.0.4
-itsdangerous==1.1.0
-Jinja2==2.11.3
-MarkupSafe==1.1.1
-Werkzeug==1.0.1
+click
+Flask
+gunicorn
+itsdangerous
+Jinja2
+MarkupSafe
+Werkzeug
 python-dotenv
-Flask-MySQL
+mongoengine
+flask-mongoengine
+# psycopg2-binary
+# Flask-PyMongo
+# Flask-MySQL
+# postgres
+# flask_postgres
 #https://python.plainenglish.io/some-useful-python-flask-plugins-3ac57faaca7e
-Flask-SQLAlchemy
-Flask-WTF
-Flask-Uploads
-Flask-Debugtoolbar
-Flask-Login
-Flask-Admin
-Flask-Cors
-Flask-Migrate
-peewee
-wtf-peewee
-flask-peewee
+# Flask-SQLAlchemy
+# Flask-WTF
+# Flask-Uploads
+# Flask-Debugtoolbar
+# Flask-Login
+# Flask-Admin
+# Flask-Cors
+# Flask-Migrate
+# peewee
+# wtf-peewee
+# flask-peewee
 #https://nickjanetakis.com/blog/15-useful-flask-extensions-and-libraries-that-i-use-in-every-project
-alembic
+# alembic
 #https://gitee.com/labike/awesome-flask
-Flask-Restless
+# Flask-Restless
 # Flask-User
 # Flask-SuperAdmin
-Flask-Alembic
+# Flask-Alembic
