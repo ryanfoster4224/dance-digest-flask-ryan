@@ -9,7 +9,7 @@
 </head>
 <body>
 <div id="app">
-    <div id="account" v-if="authorId<0">
+    <div id="account" v-if="!authorId">
         <summary>залогінитись в систему</summary>
         користувач:{{ authorId }} <input type="text" placeholder="username" v-model="username">
         <input type="password" v-model="password" placeholder="password">
@@ -21,12 +21,12 @@
             <div id="addEvent">
                 <input type="text" minlength="8" v-model="title" placeholder="назва танцювальної вечірки">
                 <input v-model="start" type="text" maxlength="5" placeholder="час початку вечірки">
-                <select v-model="weekday" required>
+                <select v-model="weekdayId" required>
                     <option value="-1" selected disabled>день тижня</option>
                     <option v-for="item, index  in weekdays" :value="index">{{ item }}</option>
                 </select>
                 <select v-model="location" required>
-                    <option value="-1" selected disabled>місце проведення</option>
+                    <option value="" selected disabled>місце проведення</option>
                     <option v-for="item  in locations" :value="item">{{ item }}</option>
                 </select>
                 <select v-model="balance" required>
@@ -77,17 +77,17 @@
     let app = new Vue({
         el: '#app',
         created: function () {
-            //this.getEvents()
+            this.getEvents()
         },
         data: {
             message: 'hello, events',
-            authorId: -1,
+            authorId: "",
             username: 'cherk', password: 'C8C4573806',
             currentEventId: -1,
-            title: "", full: "", location: -1, weekdayIndex: -1, weekday:-1, start: null, balance: "не визначено",
-            superAdmin: false, authorMode: false,
+            title: "", full: "", location: "", weekdayId: -1, weekday:"понеділок", start: null, balance: "не визначено",
+            superAdmin: true, authorMode: true,
 
-            brief: "", price: null,
+            brief: null, price: null,
             events: [],
             weekdays: ["понеділок", "вівторок", "середа", "четвер", "пʼятниця", "субота", "неділя"],
             balances: ["3 бачати, 1 сальса", "1 сальса, 1 бачата", "зук", "кізомба","не визначено"],
@@ -100,6 +100,7 @@
                 }).then((data) => {
                     for (let event of data) {
                         event.editMode = false
+                        event.id = event._id.$oid
                     }
                     this.events = data
                     console.log(data)
@@ -123,22 +124,27 @@
             insertEvent: function () {
                 const body = {
                     title: this.title,
-                    weekdayIndex: this.weekdayIndex,
-                    weekday: this.weekdays[this.weekdayIndex],
-                    location: this.location,
-                    weekday: this.weekday,
+                    price: this.price,
+                    balance: this.balance,
                     full: this.full,
                     authorId: this.authorId,
-                    published: this.authorId > 0
+                    published: this.authorId.length > 0
                 }
-                //if (this.authorId>0){body.published=1}
+                if (this.weekdayId>-1){
+                    body.weekdayId = this.weekdayId
+                    body.weekday = this.weekdays[this.weekdayId]
+                }
+                if (this.location){
+                    body.location = this.location
+                }
+
                 console.log(body)
                 const requestOptions = {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify(body)
                 }
-                fetch("/api/event/", requestOptions).then(() => {
+                fetch("/api/event", requestOptions).then(() => {
                     this.getEvents()
                 })
             },
@@ -154,17 +160,13 @@
 
             remove: function (id) {
                 console.log('deleting ' + id)
-                if (!confirm('Ви впевнені, що хочете видалити вечірку?')) {
-                    return // Do nothing!
-                }
+                //if (!confirm('Ви впевнені, що хочете видалити вечірку?')) {return // Do nothing!}
 
                 const requestOptions = {
                     method: "DELETE",
                     headers: {"Content-Type": "application/json"},
                 };
-                fetch("/api/event/" + id, requestOptions).then(() => {
-                    this.getEvents()
-                })
+                fetch("/api/event/" + id, requestOptions).then(() => {this.getEvents()})
             },
         }
     })

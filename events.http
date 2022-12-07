@@ -13,15 +13,31 @@ POST http://127.0.0.1:5000/api/event
 Content-Type: application/json
 
 {
-  "title": "bachata festival",
-  "price": "1400"
+  "title": "zou party",
+  "price": "99"
 }
+
+### Send PUT request with json body
+PUT http://127.0.0.1:5000/api/event
+Content-Type: application/json
+
+{
+  "id": "638f2eb5d0030709096f9ca8",
+  "title": "bachata festival",
+  "price": "2900"
+}
+
+
+### Send DELETE request with id
+DELETE http://127.0.0.1:5000/api/event/638f38688d91700f06631fa4
+Content-Type: application/json
 
 ### Send POST request with json body
 POST http://127.0.0.1:5000/api/user
 Content-Type: application/json
 
 {
-  "username": "root",
-  "password": "4yFG5byD88"
+  "username": "cherk",
+  "password": "C8C4573806"
 }
+
