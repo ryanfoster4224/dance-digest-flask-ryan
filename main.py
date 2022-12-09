@@ -10,12 +10,14 @@ load_dotenv()  # take environment variables from .env.
 
 app = Flask(__name__, static_url_path='/static')
 
-connect(db = "main", host = 'mongodb+srv://superadmin:rbDkYE2K4Qir69Om@dvas-cluster0.o1qow.mongodb.net/?retryWrites=true&w=majority',
-    alias = "default")
+connect(db="main",
+        host='mongodb+srv://superadmin:rbDkYE2K4Qir69Om@dvas-cluster0.o1qow.mongodb.net/?retryWrites=true&w=majority',
+        alias="default")
+
 
 class Event(Document):
     title = StringField(max_length=50, required=True)
-    price = StringField(max_length=12, default='500')
+    price = StringField(max_length=12, default='невідомо')
     authorId = StringField(default="")
     full = StringField()
     brief = StringField()
@@ -26,7 +28,8 @@ class Event(Document):
     weekday = StringField()
     published = BooleanField(default=False)
 
-    meta = {"collection":"events"}
+    meta = {"collection": "events"}
+
 
 class User(Document):
     username = StringField(min_length=3, unique=True, required=True)
@@ -38,36 +41,40 @@ class User(Document):
 def events_list():
     return Event.objects.to_json()
 
-@app.route('/api/event', methods = ['POST'])
+
+@app.route('/api/event', methods=['POST'])
 def event_add():
     body = request.json
     print(body)
-    event = Event(title = body['title'],
-                  price = body['price'],
-                  authorId = body['authorId'],
-                  full = body['full'],
-                  brief = body.get('brief', None),
-                  published = body['published'],
-                  balance = body['balance'],
-                  weekdayId = body.get('weekdayId',-1),
-                  weekday = body.get('weekday',None),
-                  start = body.gey('start', None),
-                  location = body.get('location', None)
-                  )
-    event.save()
-    return {"status":"added"}
+    event = Event(**body)
+        # title=body['title'],
+        # price=body['price'],
+        # authorId=body['authorId'],
+        # full=body['full'],
+        # brief=body.get('brief', None),
+        # published=body['published'],
+        # balance=body['balance'],
+        # weekdayId=body.get('weekdayId', -1),
+        # weekday=body.get('weekday', None),
+        # start=body.get('start', None),
+        # location=body.get('location', None)
 
-@app.route('/api/event', methods = ['PUT'])
+    event.save()
+    return {"status": "added"}
+
+
+@app.route('/api/event', methods=['PUT'])
 def event_update():
     body = request.json
     print(body)
     try:
-        Event.objects(pk=body['id'])\
-            .update(title=body['title'], price=body['price'])
+        Event.objects(pk=body['id']) \
+            .update(**body)
     except:
-        return jsonify({"status":"error on update"})
+        return jsonify({"status": "error on update"})
 
-    return jsonify({"status":"updated"})
+    return jsonify({"status": "updated"})
+
 
 @app.route('/api/event/<string:sid>', methods=['DELETE'])
 def event_delete(sid: str):
@@ -79,9 +86,10 @@ def event_delete(sid: str):
         de.delete()
     except:
         print('deleting error')
-        return jsonify({"status":"deleting error"})
+        return jsonify({"status": "deleting error"})
 
-    return jsonify({"status":"deleted sucessfully"})
+    return jsonify({"status": "deleted sucessfully"})
+
 
 @app.route('/api/user/')
 def get_permissions():
@@ -102,38 +110,40 @@ def get_permissions():
         print(user.pk, user.superAdmin)
         if user.hash == hash:
             # return jsonify("maybe")
-            return jsonify({'authorId':str(user.pk),'superAdmin':bool(user.superAdmin)})
+            return jsonify({'authorId': str(user.pk), 'superAdmin': bool(user.superAdmin)})
 
     else:
-        return jsonify({'authorId': -1, 'superAdmin': False})
+        return jsonify({'authorId': "", 'superAdmin': False})
 
-@app.route('/api/user', methods = ['POST'])
+
+@app.route('/api/user', methods=['POST'])
 def user_add():
     body = request.json
-    if len(body['password'])<3:
+    if len(body['password']) < 3:
         return "too short password"
     # encode it to bytes using UTF-8 encoding
     body['hash'] = ("SHA-256:", hashlib.sha256(body['password'].encode()).hexdigest())[1]
     # body['hash'] = 'fsdfsdf'
 
     print(body)
-    user = User(username = body['username'], hash = body['hash'])
+    user = User(username=body['username'], hash=body['hash'])
     user.save()
-    return {"status":"user created"}
+    return {"status": "user created"}
 
 
 @app.route('/add')
 def add():
     e1 = Event(title='java conference')
     e1.save()
-    return [{"status":"added"}]
+    return [{"status": "added"}]
+
 
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
 
+
 if __name__ == '__main__':
-    #user = User.objects(username='cherk').first()
+    # user = User.objects(username='cherk').first()
 
     app.run(debug=True, port=os.getenv("PORT", default=5000))
-

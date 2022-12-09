@@ -37,7 +37,7 @@ POST http://127.0.0.1:5000/api/user
 Content-Type: application/json
 
 {
-  "username": "cherk",
-  "password": "C8C4573806"
+  "username": "costa",
+  "password": "vg46je83kR37"
 }
 

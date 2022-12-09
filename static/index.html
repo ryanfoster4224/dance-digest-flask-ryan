@@ -3,22 +3,65 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>пункти танцювальності</title>
+    <title>Анонси вечірок на тиждень</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.13/dist/vue.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 </head>
 <body>
 <div id="app">
-    <div id="account" v-if="!authorId">
+    <details id="account" v-if="!authorId">
         <summary>залогінитись в систему</summary>
-        користувач:{{ authorId }} <input type="text" placeholder="username" v-model="username">
-        <input type="password" v-model="password" placeholder="password">
+        username: {{ authorId }} <input type="text" placeholder="username" v-model="username">
+        password: <input type="password" v-model="password" placeholder="password">
         <button v-on:click="getPermissions">зайти</button>
-    </div>
+    </details>
 
     <section class="section">
         <div class="container">
+            <div class="has-text-right">
+                <a href="#addEvent" class="has-text-weight-bold">Додати анонс вечірки</a>
+            </div>
+            <div v-for="e, index in events">
+                <div v-if="!e.editMode">
+                    <strong>{{ e.weekday }} - 💃{{ e.title }}🕺</strong> початок: ⏰{{ e.start }}
+                    📍адреса: {{ e.location }} баланс музики: 🎸{{ e.balance }}
+
+                    <details>
+                        <summary>👉 дивитись повну версію анонсу</summary>
+                        <pre>{{ e.full }}</pre>
+                    </details>
+
+                </div>
+                <h2 v-else>
+                    <input type="text" v-model="e.title">
+                    <input type="text" v-model="e.start">
+
+                    <select v-model="e.weekdayId" required>
+                        <option value="-1" selected disabled>день тижня</option>
+                        <option v-for="item, index  in weekdays" :value="index">{{ item }}</option>
+                    </select>
+                    <select v-model="e.location" required>
+                        <option value="" selected disabled>місце проведення</option>
+                        <option v-for="item  in locations" :value="item">{{ item }}</option>
+                    </select>
+                    <select v-model="e.balance" required>
+                        <option value="не визначено" selected disabled>баланс музики</option>
+                        <option v-for="item  in balances" :value="item">{{ item }}</option>
+                    </select>
+
+
+                    <br><textarea style="width: 80%" v-model="e.full"></textarea>
+                    <button v-on:click="saveEvent(index)">Зберегти зміни</button>
+                </h2>
+                <div v-if="authorMode && ( authorId===e.authorId || superAdmin)">
+                    <button v-on:click="editEvent(index)" class="button is-primary">edit</button>
+                    <button v-on:click="remove(e.id)" class="button">delete</button>
+                </div>
+                <hr>
+            </div>
+
             <div id="addEvent">
+                <p>форма додання анонсу вечірки</p>
                 <input type="text" minlength="8" v-model="title" placeholder="назва танцювальної вечірки">
                 <input v-model="start" type="text" maxlength="5" placeholder="час початку вечірки">
                 <select v-model="weekdayId" required>
@@ -47,27 +90,10 @@
                     <option>cherk</option>
                 </select>
                 </div>
-                <button v-on:click="insertEvent">додати вечірку</button>
-            </div>
-
-            <div v-for="e, index in events">
-                <div v-if="!e.editMode"><strong>{{ e.title }}</strong> {{ e.weekday }} початок: {{ e.start }}
-                     адреса: {{ e.location }}
-                    ціна: {{ e.price }}
-                    <pre>{{ e.full }}</pre>
+                <div>
+                    <button v-on:click="insertEvent">додати вечірку</button>
 
                 </div>
-                <h2 v-else>
-                    <input type="text" v-model="e.title">
-
-                    <br><textarea style="width: 80%" v-model="e.full"></textarea>
-                    <button v-on:click="saveEvent(index)">Зберегти зміни</button>
-                </h2>
-                <div v-if="authorMode && ( authorId===e.authorId || superAdmin)">
-                    <button v-on:click="editEvent(index)" class="button is-primary">edit</button>
-                    <button v-on:click="remove(e.id)" class="button">delete</button>
-                </div>
-                <hr>
             </div>
 
         </div>
@@ -82,16 +108,48 @@
         data: {
             message: 'hello, events',
             authorId: "",
-            username: 'cherk', password: 'C8C4573806',
+            username: '',
+            password: '',
             currentEventId: -1,
-            title: "", full: "", location: "", weekdayId: -1, weekday:"понеділок", start: null, balance: "не визначено",
-            superAdmin: true, authorMode: true,
+            title: "",
+            full: "",
+            location: "",
+            weekdayId: -1,
+            weekday: "понеділок",
+            start: null,
+            balance: "не визначено",
+            superAdmin: false,
+            authorMode: false,
 
-            brief: null, price: null,
+            brief: null,
+            price: null,
             events: [],
             weekdays: ["понеділок", "вівторок", "середа", "четвер", "пʼятниця", "субота", "неділя"],
-            balances: ["3 бачати, 1 сальса", "1 сальса, 1 бачата", "зук", "кізомба","не визначено"],
-            locations: ["кампус", "буена", "арт-кафе золоті ворота"]
+            balances: [
+                "3 бачати, 1 сальса",
+                "1 сальса, 1 бачата",
+                "3 бачати, 2 сальси",
+                "2 сальси, 2 бачати",
+                "4 бачати, 1 сальса",
+                "5 бачата, 1 кізомба",
+                "зук",
+                "кізомба",
+                "3 кубани, 1 бачата",
+                "не визначено"
+            ],
+            locations: [
+                "кампус, Вул. Саксаганського 1, м.Палац спорту",
+                "Signal Event Hall, Жилянська 97б, м. Вокзальна",
+                "центр бачати, вул. Дарвина, 1, м. Театральна",
+                "Buena Vista,  вул. Велика Житомирська 8/14, м. Золоті ворота",
+                "арт-кафе Золоті Ворота, вул. Миколи Лисенка, 1, ст.м. Золоті ворота",
+                "Nivki Hall Проспект Перемоги 84, . м. Нивки",
+                "Гонцо бар, вул. Коперника 2, м. лукянівська",
+                "центр танців,  вул. Довженка 3а, м.Шулявска",
+                "котокафе, м. Вокзальна",
+                "лівобережна студія, вул. Дніпровська набережна 19, м. Осокорки",
+                "Raíces Dance Studio, вул. Кирилівська,4, м. Контрактова площа",
+            ]
         },
         methods: {
             getEvents: function () {
@@ -116,7 +174,7 @@
                 }).then((data) => {
                     console.log(data)
                     this.authorId = data.authorId
-                    this.authorMode = data.authorId > 0 || data.superAdmin
+                    this.authorMode = data.authorId.length > 0 || data.superAdmin
                     this.superAdmin = data.superAdmin
                 })
             },
@@ -124,17 +182,20 @@
             insertEvent: function () {
                 const body = {
                     title: this.title,
+                    full: this.full,
+
+                    start: this.start,
+
                     price: this.price,
                     balance: this.balance,
-                    full: this.full,
                     authorId: this.authorId,
                     published: this.authorId.length > 0
                 }
-                if (this.weekdayId>-1){
+                if (this.weekdayId > -1) {
                     body.weekdayId = this.weekdayId
                     body.weekday = this.weekdays[this.weekdayId]
                 }
-                if (this.location){
+                if (this.location) {
                     body.location = this.location
                 }
 
@@ -150,24 +211,55 @@
             },
 
             editEvent: function (index) {
-                //alert("let's edit " + index)
                 this.events[index].editMode = true
-                console.log(this.events)
             },
+
             saveEvent: function (index) {
                 this.events[index].editMode = false
+
+                const body = {
+                    id: this.events[index].id,
+                    title: this.events[index].title,
+                    full: this.events[index].full,
+                    start: this.events[index].start,
+
+                    price: this.events[index].price,
+                    balance: this.events[index].balance,
+                }
+                if (this.events[index].weekdayId > -1) {
+                    body.weekdayId = this.events[index].weekdayId
+                    body.weekday = this.weekdays[this.events[index].weekdayId]
+                }
+                if (this.events[index].location) {
+                    body.location = this.events[index].location
+                }
+
+                console.log(body)
+                const requestOptions = {
+                    method: "PUT",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify(body)
+                }
+                fetch("/api/event", requestOptions).then(() => {
+                    this.getEvents()
+                })
             },
 
             remove: function (id) {
                 console.log('deleting ' + id)
-                //if (!confirm('Ви впевнені, що хочете видалити вечірку?')) {return // Do nothing!}
+                if (!confirm('Ви впевнені, що хочете видалити вечірку?')) {
+                    return
+                }
 
                 const requestOptions = {
                     method: "DELETE",
                     headers: {"Content-Type": "application/json"},
                 };
-                fetch("/api/event/" + id, requestOptions).then(() => {this.getEvents()})
-            },
+                fetch("/api/event/" + id, requestOptions).then(() => {
+                    this.getEvents()
+                })
+            }
+            ,
         }
     })
 </script>
