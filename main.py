@@ -1,41 +1,14 @@
 from flask import Flask, jsonify, request
 import os, hashlib
 from dotenv import load_dotenv
-from flask_mongoengine import MongoEngine
-from mongoengine import *
+from monga import *
+
 import hashlib
-from bson.objectid import ObjectId
 import datetime
 
 load_dotenv()  # take environment variables from .env.
 
 app = Flask(__name__, static_url_path='/static')
-
-connect(db="main",
-        host='mongodb+srv://superadmin:rbDkYE2K4Qir69Om@dvas-cluster0.o1qow.mongodb.net/?retryWrites=true&w=majority',
-        alias="default")
-
-
-class Event(Document):
-    title = StringField(max_length=50, required=True)
-    price = StringField(max_length=12, default='невідомо')
-    authorId = StringField(default="")
-    full = StringField()
-    brief = StringField()
-    balance = StringField(default="merengue")
-    location = StringField(default='АТБ на Виноградарі')
-    start = StringField(max_length=5, default='07:00')
-    weekdayId = IntField()
-    weekday = StringField()
-    published = BooleanField(default=False)
-
-    meta = {"collection": "events"}
-
-
-class User(Document):
-    username = StringField(min_length=3, unique=True, required=True)
-    hash = StringField(required=True)
-    superAdmin = BooleanField(default=False)
 
 
 @app.route('/api/events')
@@ -50,17 +23,6 @@ def event_add():
     body = request.json
     print(body)
     event = Event(**body)
-        # title=body['title'],
-        # price=body['price'],
-        # authorId=body['authorId'],
-        # full=body['full'],
-        # brief=body.get('brief', None),
-        # published=body['published'],
-        # balance=body['balance'],
-        # weekdayId=body.get('weekdayId', -1),
-        # weekday=body.get('weekday', None),
-        # start=body.get('start', None),
-        # location=body.get('location', None)
 
     event.save()
     return {"status": "added"}
