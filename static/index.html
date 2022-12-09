@@ -24,7 +24,8 @@
             <div v-for="e, index in events">
                 <div v-if="!e.editMode">
                     <strong>{{ e.weekday }} - 💃{{ e.title }}🕺</strong> початок: ⏰{{ e.start }}
-                    📍адреса: {{ e.location }}, баланс музики: 🎸{{ e.balance }}, <span v-if="e.price">вартість: 💰{{ e.price }}</span>
+                    📍адреса: {{ e.location }}, баланс музики: 🎸{{ e.balance }}, <span
+                        v-if="e.price">вартість: 💰{{ e.price }}</span>
 
                     <details>
                         <summary>👉 дивитись повну версію анонсу</summary>
@@ -98,9 +99,13 @@
 
         </div>
     </section>
-    <a href='http://www.freevisitorcounters.com'>www.Freevisitorcounters.com</a> <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=e678b7686b427c326ccbaf76bb7766409b1635aa'></script>
-<script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/977876/t/1"></script>
+
+
+
 </div>
+<a href='http://www.freevisitorcounters.com'>www.Freevisitorcounters.com</a>
+<script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=e678b7686b427c326ccbaf76bb7766409b1635aa'></script>
+ <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/977876/t/1"></script>
 <script>
     let app = new Vue({
         el: '#app',
