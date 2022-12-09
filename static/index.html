@@ -16,7 +16,7 @@
         <button v-on:click="getPermissions">зайти</button>
     </details>
 
-    <section class="section">
+    <section class="section" class="section" style="padding: 1rem 1rem">
         <div class="container">
             <div class="has-text-right">
                 <a href="#addEvent" class="has-text-weight-bold">Додати анонс вечірки</a>
@@ -24,7 +24,7 @@
             <div v-for="e, index in events">
                 <div v-if="!e.editMode">
                     <strong>{{ e.weekday }} - 💃{{ e.title }}🕺</strong> початок: ⏰{{ e.start }}
-                    📍адреса: {{ e.location }} баланс музики: 🎸{{ e.balance }}
+                    📍адреса: {{ e.location }}, баланс музики: 🎸{{ e.balance }}, <span v-if="e.price">вартість: 💰{{ e.price }}</span>
 
                     <details>
                         <summary>👉 дивитись повну версію анонсу</summary>
@@ -98,6 +98,8 @@
 
         </div>
     </section>
+    <a href='http://www.freevisitorcounters.com'>www.Freevisitorcounters.com</a> <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=e678b7686b427c326ccbaf76bb7766409b1635aa'></script>
+<script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/977876/t/1"></script>
 </div>
 <script>
     let app = new Vue({
@@ -131,7 +133,7 @@
                 "3 бачати, 2 сальси",
                 "2 сальси, 2 бачати",
                 "4 бачати, 1 сальса",
-                "5 бачата, 1 кізомба",
+                "5 бачат, 1 кізомба",
                 "зук",
                 "кізомба",
                 "3 кубани, 1 бачата",
