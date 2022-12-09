@@ -5,6 +5,7 @@ from flask_mongoengine import MongoEngine
 from mongoengine import *
 import hashlib
 from bson.objectid import ObjectId
+import datetime
 
 load_dotenv()  # take environment variables from .env.
 
@@ -39,7 +40,9 @@ class User(Document):
 
 @app.route('/api/events')
 def events_list():
-    return Event.objects.to_json()
+    weekday_id = datetime.datetime.today().weekday()
+    return Event.objects(weekdayId__gte=weekday_id)\
+        .order_by('weekdayId').to_json()
 
 
 @app.route('/api/event', methods=['POST'])
