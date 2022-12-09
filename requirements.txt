@@ -8,6 +8,7 @@ Werkzeug
 python-dotenv
 mongoengine
 flask-mongoengine
+pyTelegramBotAPI
 # psycopg2-binary
 # Flask-PyMongo
 # Flask-MySQL
