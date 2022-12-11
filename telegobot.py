@@ -7,7 +7,7 @@ bot = TeleBot("5602757659:AAHmbDMWM4iVQ9RTu79inwC3cCBTKqS361Q",
 
 def get_event_html(item: Event):
     return f'<em>{item.weekday}</em>, 💃{item.title}🕺, початок⏰ {item.start}, баланс🎸: <b>{item.balance}</b>, \n📍адреса {item.location}\n' \
-                     f'вартість💰: <b>{item.price}</b> \n----------\n'
+                     f'вартість💰: <b>{item.price}</b> <a href="https://opendance.life/event/{item.pk}">деталі події</a>\n----------\n'
 def get_events():
     weekday_id = datetime.datetime.today().weekday()
     return  Event.objects(weekdayId__gte=weekday_id) \
@@ -24,7 +24,7 @@ def send_announce(announces='Hi'):
                 'через форму знизу сайта'
     wild_dances_channel_id = -1001866935354
     social_dances_id = -1001287171602
-    bot.send_message(social_dances_id, text=announces, parse_mode='HTML')
+    bot.send_message(wild_dances_channel_id, text=announces, parse_mode='HTML')
 
 if __name__ == '__main__':
     send_announce()

@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
 import os, hashlib
 from dotenv import load_dotenv
 from monga import *
@@ -106,6 +106,12 @@ def add():
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
+
+@app.route('/event/<string:id>')
+def event_details(id:str):
+    event = Event.objects(pk=id).first()
+    print(event)
+    return render_template("event_details.jinja.html", id=id, event=event)
 
 
 if __name__ == '__main__':
