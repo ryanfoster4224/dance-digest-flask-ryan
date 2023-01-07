@@ -24,7 +24,7 @@ def send_announce(announces='Hi'):
                 'через форму знизу сайта'
     wild_dances_channel_id = -1001866935354
     social_dances_id = -1001287171602
-    bot.send_message(wild_dances_channel_id, text=announces, parse_mode='HTML')
+    bot.send_message(social_dances_id, text=announces, parse_mode='HTML')
 
 if __name__ == '__main__':
     send_announce()

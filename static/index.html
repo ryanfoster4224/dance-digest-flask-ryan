@@ -54,7 +54,7 @@
                     <br><textarea style="width: 80%" v-model="e.full"></textarea>
                     <button v-on:click="saveEvent(index)">Зберегти зміни</button>
                 </h2>
-                <div v-if="authorMode && ( authorId===e.authorId || superAdmin)">
+                <div v-if="( authorId===e.authorId || superAdmin)">
                     <button v-on:click="editEvent(index)" class="button is-primary">edit</button>
                     <button v-on:click="remove(e.id)" class="button">delete</button>
                 </div>
@@ -149,14 +149,15 @@
                 "Signal Event Hall, Жилянська 97б, м. Вокзальна",
                 "центр бачати, вул. Дарвина, 1, м. Театральна, код #140, 7 поверх, №54",
                 "Buena Vista,  вул. Велика Житомирська 8/14, м. Золоті ворота",
+                "Just in space, м. Поштова площа, вул. Братська 6",
                 "арт-кафе Золоті Ворота, вул. Миколи Лисенка, 1, ст.м. Золоті ворота",
-                "Nivki Hall Проспект Перемоги 84, . м. Нивки",
-                "Гонцо бар, вул. Коперника 2, м. лукянівська",
+                "Nivki Hall Проспект Перемоги 84, м. Нивки",
                 "центр танців,  вул. Довженка 3а, м.Шулявска",
-                "котокафе, м. Вокзальна",
                 "лівобережна студія, вул. Дніпровська набережна 19, м. Осокорки",
                 "Raíces Dance Studio, вул. Кирилівська,4, м. Контрактова площа",
-                "студія CasaDeRitmo, м.Олімпійська, Вул. Жилянська, 5б, код 11К"
+                "студія CasaDeRitmo, м.Олімпійська, Вул. Жилянська, 5б, код 11К",
+                "Гонцо бар, вул. Коперника 2, м. лукянівська",
+                "котокафе, м. Вокзальна",
             ]
         },
         methods: {
