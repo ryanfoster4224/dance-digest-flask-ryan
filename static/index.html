@@ -49,6 +49,8 @@
                         <option value="не визначено" selected disabled>баланс музики</option>
                         <option v-for="item  in balances" :value="item">{{ item }}</option>
                     </select>
+                    <input type="text" v-model="e.price">
+
 
 
                     <br><textarea style="width: 80%" v-model="e.full"></textarea>
