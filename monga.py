@@ -12,7 +12,7 @@ class Event(Document):
     full = StringField()
     brief = StringField()
     balance = StringField(default="merengue")
-    location = StringField(default='АТБ на Виноградарі')
+    location = StringField(default='локація невідома')
     start = StringField(max_length=5, default='07:00')
     weekdayId = IntField()
     weekday = StringField()

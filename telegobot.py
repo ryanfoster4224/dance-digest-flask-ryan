@@ -21,7 +21,8 @@ def send_announce(announces='Hi'):
         announces+= get_event_html(event)
     announces += 'детальніша інформація про вечірки є на сайті https://opendance.life/' \
                 '\n якщо якоїсь вечірки немає в списку, ви можете самостійно додати її до бази, ' \
-                'через форму знизу сайта'
+                'через форму знизу сайта. також якщо вашої події немає в дайджесті - ви можете ' \
+                 'самостійно додайти її в групу https://t.me/opendance_life/68773'
     wild_dances_channel_id = -1001866935354
     social_dances_id = -1001287171602
     bot.send_message(social_dances_id, text=announces, parse_mode='HTML')

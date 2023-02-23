@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello Bulma!</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.7.13/dist/vue.js"></script>
+
+<section class="section">
+    <div class="container" id="app">
+        <div>{{ message }}</div>
+
+        <div id="components-demo">
+            <mycomp></mycomp>
+        </div>
+    </div>
+</section>
+<script>
+    Vue.component('mycomp', {
+        data: function () {
+            return {
+                count: 0
+            }
+        },
+        template: `
+        <div>
+        <b>ffewefewf</b>
+        <select>
+          <option>Пункт 45</option>
+          <option>Пункт 2</option>
+        </select>
+        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+         <button v-on:click="count++">Счётчик кликов — {{ count }}</button>
+
+        </div>
+        `
+    })
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!'
+        }
+    })
+
+</script>
+</body>
+</html>

@@ -22,7 +22,7 @@
                 <a href="#addEvent" class="has-text-weight-bold">Додати анонс вечірки</a>
             </div>
             <div v-for="e, index in events">
-                <div v-if="!e.editMode">
+                <div v-if="e.editMode===false">
                     <strong>{{ e.weekday }} - 💃{{ e.title }}🕺</strong> початок: ⏰{{ e.start }}
                     📍адреса: {{ e.location }}, баланс музики: 🎸{{ e.balance }}, <span
                         v-if="e.price">вартість: 💰{{ e.price }}</span>
@@ -51,9 +51,7 @@
                     </select>
                     <input type="text" v-model="e.price">
 
-
-
-                    <br><textarea style="width: 80%" v-model="e.full"></textarea>
+                    <br><textarea rows="10" style="width: 80%" v-model="e.full"></textarea>
                     <button v-on:click="saveEvent(index)">Зберегти зміни</button>
                 </h2>
                 <div v-if="( authorId===e.authorId || superAdmin)">
@@ -72,22 +70,23 @@
                     <option v-for="item, index  in weekdays" :value="index">{{ item }}</option>
                 </select>
                 <select v-model="location" required>
-                    <option value="" selected disabled>місце проведення</option>
+                    <option value="" selected disabled>вибрати місце зі списку</option>
                     <option v-for="item  in locations" :value="item">{{ item }}</option>
                 </select>
+                <input type="text" v-model="customLocation" placeholder="ввести нову локацію">
+
                 <select v-model="balance" required>
                     <option value="не визначено" selected disabled>баланс музики</option>
                     <option v-for="item  in balances" :value="item">{{ item }}</option>
                 </select>
 
-                <br><textarea v-model="full" style="width: 80%" placeholder="детальний опис події"></textarea>
+                <br><textarea rows="10" v-model="full" style="width: 80%" placeholder="детальний опис події"></textarea>
 
                 <div v-if="authorMode">
-
-                </div>
-                <div v-if="superAdmin">
                     <input type="text" minlength="2" v-model="price"
                            placeholder="вартість: мінімальна-максимальна ціна">
+                </div>
+                <div v-if="superAdmin">
                     <input type="text" v-model="brief" placeholder="стислий опис">
                     author: <select v-model="authorId">
                     <option>cherk</option>
@@ -95,7 +94,6 @@
                 </div>
                 <div>
                     <button v-on:click="insertEvent">додати вечірку</button>
-
                 </div>
             </div>
 
@@ -103,11 +101,11 @@
     </section>
 
 
-
 </div>
 <a href='http://www.freevisitorcounters.com'>www.Freevisitorcounters.com</a>
-<script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=e678b7686b427c326ccbaf76bb7766409b1635aa'></script>
- <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/977876/t/1"></script>
+<script type='text/javascript'
+        src='https://www.freevisitorcounters.com/auth.php?id=e678b7686b427c326ccbaf76bb7766409b1635aa'></script>
+<script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/977876/t/1"></script>
 <script>
     let app = new Vue({
         el: '#app',
@@ -123,6 +121,7 @@
             title: "",
             full: "",
             location: "",
+            customLocation: "",
             weekdayId: -1,
             weekday: "понеділок",
             start: null,
@@ -135,15 +134,13 @@
             events: [],
             weekdays: ["понеділок", "вівторок", "середа", "четвер", "пʼятниця", "субота", "неділя"],
             balances: [
-                "3 бачати, 1 сальса",
-                "1 сальса, 1 бачата",
-                "3 бачати, 2 сальси",
-                "2 сальси, 2 бачати",
-                "4 бачати, 1 сальса",
-                "5 бачат, 1 кізомба",
-                "зук",
-                "кізомба",
-                "3 кубани, 1 бачата",
+                "3 bachata, 1 salsa",
+                "4 bachata, 1 salsa",
+                "1 salsa, 1 bachata",
+                "2 salsa, 2 bachata",
+                "zouk",
+                "kizomba",
+                "3 cubana, 1 bachata",
                 "не визначено"
             ],
             locations: [
@@ -158,6 +155,7 @@
                 "лівобережна студія, вул. Дніпровська набережна 19, м. Осокорки",
                 "Raíces Dance Studio, вул. Кирилівська,4, м. Контрактова площа",
                 "студія CasaDeRitmo, м.Олімпійська, Вул. Жилянська, 5б, код 11К",
+                "депо, вулиця Васильківська 23/6",
                 "Гонцо бар, вул. Коперника 2, м. лукянівська",
                 "котокафе, м. Вокзальна",
             ]
@@ -170,6 +168,8 @@
                     for (let event of data) {
                         event.editMode = false
                         event.id = event._id.$oid
+                        if (!this.location.includes(event.location)){
+                            this.locations.push(event.location)}
                     }
                     this.events = data
                     console.log(data)
@@ -206,7 +206,9 @@
                     body.weekdayId = this.weekdayId
                     body.weekday = this.weekdays[this.weekdayId]
                 }
-                if (this.location) {
+                if (this.customLocation) {
+                    body.location = this.customLocation
+                } else if (this.location) {
                     body.location = this.location
                 }
 
@@ -217,6 +219,11 @@
                     body: JSON.stringify(body)
                 }
                 fetch("/api/event", requestOptions).then(() => {
+                    this.title = ""
+                    this.location = ""
+                    this.customLocation = ""
+                    this.start = ""
+                    this.weekdayId = -1
                     this.getEvents()
                 })
             },
